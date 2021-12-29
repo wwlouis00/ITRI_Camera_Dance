@@ -22,9 +22,8 @@ while(1):
     k = cv.waitKey(1) & 0xFF
     if k == 27:
         break
-
     r = cv.getTrackbarPos('a','image')
-    r= float(r)/100.0
+    r = float(r) / 100.0
 
     img=cv.addWeighted(img1,r,img2,1.0-r,0)
 
