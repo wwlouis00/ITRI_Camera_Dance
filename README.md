@@ -11,12 +11,4 @@ Python一開始執行程式時，會先全面檢查語法，如果是語法錯�
 如果語法沒問題，但在執行過程中發生系統無法處理的物錯，則稱為執行期錯誤
 <p>This is a normal paragraph:</p>
 
-<pre><code>try:
-  可能發生區塊
-</code></pre>
-try:
-  可能發生區塊
-except:
-  例外處理區塊
-### try...except...else...finally...
 
