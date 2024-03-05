@@ -15,13 +15,14 @@ def print_camera_properties(cap, camera_index):
 
 def main():
     # 開啟第一個webcam
-    cap1 = cv2.VideoCapture(2)
+    cap1 = cv2.VideoCapture(0)
     
     # 開啟第二個webcam（通常是1，如果不行可以試試其他數字）
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     # 設定影片寫入器
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # 或者使用 'H264'
     out1 = cv2.VideoWriter(f'./video_all/testcam1_{timestamp}.mp4', fourcc, 20.0, (1920, 1080))
+    # out1 = cv2.VideoWriter('output.avi', fourcc, 20.0, (int(width), int(height)))
 
     recording = False  # 是否正在錄影
 
