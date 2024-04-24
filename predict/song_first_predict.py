@@ -4,6 +4,7 @@ from ultralytics import YOLO
 from datetime import datetime
 import numpy as np
 import os
+
 def calculate_iou(box1, box2):
     # Calculate intersection coordinates
     x1 = max(box1[0], box2[0])
@@ -41,10 +42,10 @@ def process_video(video_path, model_path1, model_path2, output_path):
     os.makedirs(output_path, exist_ok=True)
     # Set up video writer
     fourcc = cv.VideoWriter_fourcc(*'MJPG') 
-    out = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] +'_第二首歌_' + str(timestamp) + '_predict.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
-    out2 = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] + '_第二首歌_' + str(timestamp) + '_person.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
+    out = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] +'_第一首歌_' + str(timestamp) + '_predict.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
+    out2 = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] + '_第一首歌_' + str(timestamp) + '_person.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
 
-    csv_file_name = os.path.splitext(os.path.basename(video_path))[0] + '_第二首歌_' + str(timestamp)+ '_results.csv'
+    csv_file_name = os.path.splitext(os.path.basename(video_path))[0] + '_第一首歌_' + str(timestamp)+ '_results.csv'
     csv_file_path = os.path.join(output_path, csv_file_name)
     with open(csv_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -102,8 +103,8 @@ def process_video(video_path, model_path1, model_path2, output_path):
 
             out.write(annotated_frame)
             out2.write(frame2)
-            cv.imshow(os.path.splitext(os.path.basename(video_path))[0]+"_second song", annotated_frame)
-            cv.imshow(os.path.splitext(os.path.basename(video_path))[0]+"_second song person", frame2) # Add this line to show boxes2 in a separate window
+            cv.imshow(os.path.splitext(os.path.basename(video_path))[0]+"_first song", annotated_frame)
+            cv.imshow(os.path.splitext(os.path.basename(video_path))[0]+"_first song person", frame2) # Add this line to show boxes2 in a separate window
             if cv.waitKey(1) & 0xFF == ord("q"):
                 break
             frame_number += 1
@@ -115,8 +116,8 @@ def process_video(video_path, model_path1, model_path2, output_path):
     cv.destroyAllWindows()
 
 # 使用範例
-video_path = "dance_video/20240320/testcam3_20240320105655.mp4"
-model_path1 = "model/pose_20240321_second.pt"
-model_path2 = "yolov8s.pt"
-output_path = "result_second_song/"+os.path.splitext(os.path.basename(video_path))[0]+"/"
+video_path = "your_video"
+model_path1 = "your_model"
+model_path2 = "your_model"
+output_path = "result_first_song/"+os.path.splitext(os.path.basename(video_path))[0]+"/"
 process_video(video_path, model_path1, model_path2, output_path)
