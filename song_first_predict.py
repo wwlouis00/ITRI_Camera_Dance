@@ -25,6 +25,11 @@ def calculate_iou(box1, box2):
 
     return iou
 
+def seconds_to_time_format(seconds):
+    minutes = seconds // 60
+    remaining_seconds = seconds % 60
+    return f"{int(minutes)}:{int(remaining_seconds):02d}"
+
 def process_video(video_path, model_path1, model_path2, output_path):
     model = YOLO(model_path1)
     model2 = YOLO(model_path2)
@@ -35,7 +40,7 @@ def process_video(video_path, model_path1, model_path2, output_path):
     # Open video file
     cap = cv.VideoCapture(video_path)
     cap2 = cv.VideoCapture(video_path)
-
+    fps = cap.get(cv.CAP_PROP_FPS)
     # Video resolution
     width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))    # Get the width of the frame
     height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))  # Get the height of the frame
@@ -43,24 +48,24 @@ def process_video(video_path, model_path1, model_path2, output_path):
     os.makedirs(output_path, exist_ok=True)
     # Set up video writer
     fourcc = cv.VideoWriter_fourcc(*'MJPG') 
-    out = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] +'_第一首歌_' + str(timestamp) + '_predict.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
-    out2 = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] + '_第一首歌_' + str(timestamp) + '_person.mp4', fourcc, 20.0, (width,  height))  # Create an empty video
+    out = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] +'_第一首歌_' + str(timestamp) + '_predict.mp4', fourcc, fps, (width,  height))  # Create an empty video
+    out2 = cv.VideoWriter(output_path + os.path.splitext(os.path.basename(video_path))[0] + '_第一首歌_' + str(timestamp) + '_person.mp4', fourcc, fps, (width,  height))  # Create an empty video
 
     csv_file_name = os.path.splitext(os.path.basename(video_path))[0] + '_第一首歌_' + str(timestamp)+ '_results.csv'
     csv_file_path = os.path.join(output_path, csv_file_name)
     with open(csv_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Frame","當前時間","Person ID", "人的位置", "動作位置", "動作類別", "動作分數"])
+        writer.writerow(["Frame","累積時間","Person ID", "人的位置", "動作位置", "動作類別", "動作分數"])
         
         frame_number = 0
         while True:
             ret, frame = cap.read()
             ret, frame2 = cap2.read()
             if not ret:
-                print("End of video file reached")
+                print("影片結束")
                 break
-            now = datetime.datetime.now()
-            current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            elapsed_time = cap.get(cv.CAP_PROP_POS_MSEC) / 1000.0
+            time_formatted = seconds_to_time_format(elapsed_time)
             detect_params = model.predict(frame, device=0)
             detect_params2 = model2.track(frame, classes=0, persist=True)
             boxes = detect_params[0].boxes
@@ -82,7 +87,7 @@ def process_video(video_path, model_path1, model_path2, output_path):
                 )
                 cv.putText(
                     frame2,
-                    f"frame: {frame_number} Time: {current_time}",
+                    f"frame: {frame_number} Elapsed Time: {time_formatted}",
                     (50,25),
                     cv.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -91,7 +96,7 @@ def process_video(video_path, model_path1, model_path2, output_path):
                 )
                 cv.putText(
                     frame,
-                    f"frame: {frame_number} Time: {current_time}",
+                    f"frame: {frame_number} Elapsed Time: {time_formatted}",
                     (50, 25),
                     cv.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -125,7 +130,7 @@ def process_video(video_path, model_path1, model_path2, output_path):
                 
                 # Write data to CSV
                 if closest_box is not None:
-                    writer.writerow([frame_number,current_time, id2, bb, closest_box, closest_class, closest_confidence])
+                    writer.writerow([frame_number,time_formatted, id2, bb, closest_box, closest_class, closest_confidence])
 
                 
             annotated_frame = detect_params[0].plot()
@@ -146,7 +151,7 @@ def process_video(video_path, model_path1, model_path2, output_path):
 
 def main():
     # 使用範例
-    video_path = "dance_video/20240131/testcam1_20240131105545.mp4"
+    video_path = "dance_video/20240124/testcam4_20240124105737.mp4"
     model_path1 = "model/pose_20240322_first.pt"
     model_path2 = "yolov8s.pt"
     output_path = "result_first_song/"+os.path.splitext(os.path.basename(video_path))[0]+"/"
