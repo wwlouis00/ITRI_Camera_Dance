@@ -22,9 +22,14 @@
 ### 資料擴增
 Roboflow 提供了豐富的在線數據增強工具，用於處理圖像數據，改善數據集的多樣性，提高模型的泛化能力。數據增強是在保持圖像語義信息的前提下，通過應用各種變換和處理來生成多樣性的圖像，從而增加模型對於不同場景的適應能力。
 ### 軟硬體版本
+#### 一般電腦
 - OS:		Ubuntu 22.04.4 LTS x86_64
 - CPU:	12th Gen Intel i7-12700K (20) @ 4.900GHz
 - GPU:	NVIDIA GeForce RTX 3060 Ti 8GB
+#### 伺服器
+- OS:		Ubuntu 22.04.4 LTS x86_64 
+-	CPU:	12th Gen Intel i7-12700K (20) @ 4.900GHz
+-	GPU:	NVIDIA GeForce RTX 3090 24GB
 
 ## 未來可改善
 ### 相機錄製畫質提升
